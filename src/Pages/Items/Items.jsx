@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { SERVER } from "../../Constant/Server";
 
 class Items extends Component {
   state = {
@@ -49,7 +50,7 @@ class Items extends Component {
               className="form-select"
               onChange={(e) => {
                 const value = e.target.value;
-                if (value) this.setState({ limit: value });
+                if (value) this.setState({ limit: value, page: 1 });
               }}
               value={this.state.limit}
             >
@@ -84,9 +85,6 @@ class Items extends Component {
 
                   if (value) this.setState({ page: value });
                 }}
-                onFocus={(e) => {
-                  console.log(e);
-                }}
                 placeholder={
                   this.state.page + "из " + this.state.pagesCount
                     ? this.state.pagesCount
@@ -118,23 +116,21 @@ class Items extends Component {
 
   LoadPagesCount = async () => {
     const response = await fetch(
-      `https://localhost:7100/api/Items/Pages?Limit=${this.state.limit}`
+      `${SERVER}/Items/Pages?Limit=${this.state.limit}`
     );
     let data = await response.json();
     if (data) {
       this.setState({ pagesCount: data });
-      console.log(this.state.pagesCount);
     }
   };
 
   LoadItems = async () => {
     const response = await fetch(
-      `https://localhost:7100/api/Items/?Page=${this.state.page}&Limit=${this.state.limit}`
+      `${SERVER}/Items/?Page=${this.state.page}&Limit=${this.state.limit}`
     );
     let data = await response.json();
     if (data) {
       this.setState({ items: data });
-      console.log(this.state.items);
     }
   };
 }

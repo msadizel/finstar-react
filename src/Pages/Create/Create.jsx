@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { useNavigate } from "react-router-dom";
-import "./.css";
+import { SERVER } from "../../Constant/Server";
 
 const withRouter = (WrappedComponent) => (props) => {
   const navigate = useNavigate();
@@ -10,11 +10,9 @@ const withRouter = (WrappedComponent) => (props) => {
 
 class Create extends Component {
   state = {
-    count: 5,
+    count: 100,
   };
-  componentDidMount() {
-    console.log(this.props);
-  }
+
   render() {
     return (
       <>
@@ -29,6 +27,7 @@ class Create extends Component {
                 const value = e.target.value;
                 if (value) this.setState({ count: value });
               }}
+              value={this.state.count}
             />
             <label htmlFor="floatingInput">
               Укажите сколько записей создать
@@ -58,7 +57,7 @@ class Create extends Component {
         value: `item - ${i + 1}`,
       });
     }
-    const rawResponse = await fetch(`https://localhost:7100/api/Items/Array`, {
+    await fetch(`${SERVER}/Items/Array`, {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -66,9 +65,6 @@ class Create extends Component {
       },
       body: JSON.stringify(items),
     });
-    const content = await rawResponse.json();
-
-    console.log(content);
     this.props.navigate("/items");
   };
 }

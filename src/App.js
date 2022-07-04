@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Create, Items } from "./Pages/";
 import { Header } from "./Components";
-import "./App.css";
 
 function App() {
   return (
