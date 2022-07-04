@@ -1,4 +1,4 @@
-# Тестовое задание Тестовое задание IT Expert Finstar
+# Тестовое задание IT Expert Finstar
 
 # Getting Started with Create React App
 
