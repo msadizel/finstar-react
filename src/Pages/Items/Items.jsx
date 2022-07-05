@@ -1,12 +1,15 @@
 import React, { Component } from "react";
+import { PageSelector, PageSize } from "../../Components/";
+
 import { SERVER } from "../../Constant/Server";
 
 class Items extends Component {
   state = {
-    items: [],
+    items: null,
     limit: 10,
     page: 1,
     pagesCount: undefined,
+    loading: true,
   };
   componentDidMount = async () => {
     this.LoadItems();
@@ -22,96 +25,59 @@ class Items extends Component {
     }
   };
   render() {
-    return (
-      <>
-        <table className="table table-bordered">
-          <thead>
-            <tr>
-              <td>ID</td>
-              <td>Значение</td>
-              <td>порядковый номер</td>
-            </tr>
-          </thead>
-          <tbody>
-            {this.state.items.map((item) => {
-              return (
-                <tr key={item.id}>
-                  <td>{item.id}</td>
-                  <td>{item.value}</td>
-                  <td>{item.number}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-        <div className="row ">
-          <div className="col-4">
-            <select
-              className="form-select"
-              onChange={(e) => {
-                const value = e.target.value;
-                if (value) this.setState({ limit: value, page: 1 });
-              }}
-              value={this.state.limit}
-            >
-              <option>5</option>
-              <option>10</option>
-              <option>25</option>
-              <option>50</option>
-              <option>100</option>
-            </select>
-          </div>
-          <div className="col-4"></div>
-          <div className="col-4 pagination">
-            <div className="page-item">
-              <button
-                className="page-link"
-                onClick={(e) => {
-                  const page = this.state.page;
-                  if (page > 1) this.setState({ page: page - 1 });
-                }}
-              >
-                <span aria-hidden="true">&laquo;</span>
-              </button>
-            </div>
-            <div className="page-item">
-              <input
-                className="form-control"
-                size="4"
-                type="number"
-                value={this.state.page}
-                onChange={(e) => {
-                  const value = e.target.value;
-
-                  if (value) this.setState({ page: value });
-                }}
-                placeholder={
-                  this.state.page + "из " + this.state.pagesCount
-                    ? this.state.pagesCount
-                    : ""
-                }
-              ></input>
-            </div>
-            <div className="page-link">
-              из {this.state.pagesCount ? this.state.pagesCount : ""}
-            </div>
-
-            <div className="page-item">
-              <button
-                className="page-link"
-                onClick={(e) => {
-                  const page = this.state.page;
-                  if (page < this.state.pagesCount)
-                    this.setState({ page: page + 1 });
-                }}
-              >
-                <span aria-hidden="true">&raquo;</span>
-              </button>
-            </div>
-          </div>
+    if (this.state.loading && !this.state.items)
+      return (
+        <div className="px-4 py-5 my-5 text-center">
+          <div class="spinner-grow text-primary" role="status"></div>
         </div>
-      </>
-    );
+      );
+    else if (this.state.items && this.state.items.length > 0)
+      return (
+        <>
+          <table className="table table-bordered">
+            <thead>
+              <tr>
+                <td>ID</td>
+                <td>Значение</td>
+                <td>порядковый номер</td>
+              </tr>
+            </thead>
+            <tbody>
+              {this.state.items.map((item) => {
+                return (
+                  <tr key={item.id}>
+                    <td>{item.id}</td>
+                    <td>{item.value}</td>
+                    <td>{item.number}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+          <div className="row ">
+            <div className="col-4">
+              <PageSize
+                pageSize={this.state.limit}
+                setPageSize={this.setPageSize}
+              ></PageSize>
+            </div>
+            <div className="col-4"></div>
+            <div className="col-4 ">
+              <PageSelector
+                setPage={this.setPage}
+                page={this.state.page}
+                pagesCount={this.state.pagesCount}
+              />
+            </div>
+          </div>
+        </>
+      );
+    else
+      return (
+        <div className="px-4 py-5 my-5 text-center">
+          Элементы для отображения отсутствуют
+        </div>
+      );
   }
 
   LoadPagesCount = async () => {
@@ -125,13 +91,22 @@ class Items extends Component {
   };
 
   LoadItems = async () => {
+    this.setState({ loading: true });
     const response = await fetch(
       `${SERVER}/Items/?Page=${this.state.page}&Limit=${this.state.limit}`
     );
     let data = await response.json();
     if (data) {
-      this.setState({ items: data });
+      this.setState({ items: data, loading: false });
     }
+  };
+
+  setPageSize = (value) => {
+    if (value) this.setState({ limit: value, page: 1 });
+  };
+
+  setPage = (value) => {
+    if (value) this.setState({ page: value });
   };
 }
 export default Items;
